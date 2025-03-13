@@ -6,7 +6,9 @@ import edu.com.igor.API_TabelaFIPE.service.ConsumoAPI;
 import edu.com.igor.API_TabelaFIPE.service.ConverteDados;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
 
@@ -47,6 +49,7 @@ public class Principal {
                 .sorted(Comparator.comparing(Dados::codigo))
                 .forEach(System.out::println);
 
+            //Recebendo o codigo da marca
         System.out.println("Informe o código da marca para consulta");
         var codigoMarca = scanner.nextLine();
 
@@ -58,5 +61,25 @@ public class Principal {
         modeloLista.modelos().stream()
                 .sorted(Comparator.comparing(Dados::codigo))
                 .forEach(System.out::println);
+
+            //Recebendo um trecho do nome do veiculo
+        System.out.println("\nDigite um trecho do nome do carro:");
+        var nomeVeiculo = scanner.nextLine();
+
+            //Criando a lista do modelos filtrados
+        List<Dados> modelosFiltrados = modeloLista.modelos().stream()
+                .filter(m -> m.nome().toLowerCase().contains(nomeVeiculo.toLowerCase()))
+                        .collect(Collectors.toList());
+
+            //Exibindo os modelos do veiculo filrados
+        System.out.println("\n Modelos filtrados:");
+        modelosFiltrados.stream()
+                .forEach(System.out::println);
+
+            //Recebendo codigo do modelo
+        System.out.println("Digite por favor o código do modelo para buscas os valores de avaliação: ");
+        var codigoModelo = scanner.nextLine();
+        endereco += "/" + codigoModelo + "/anos";
+        json = consumoAPI.obterDados(endereco);
     }
 }
