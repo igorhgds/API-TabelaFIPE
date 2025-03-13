@@ -2,9 +2,11 @@ package edu.com.igor.API_TabelaFIPE.principal;
 
 import edu.com.igor.API_TabelaFIPE.model.Dados;
 import edu.com.igor.API_TabelaFIPE.model.Modelos;
+import edu.com.igor.API_TabelaFIPE.model.Veiculo;
 import edu.com.igor.API_TabelaFIPE.service.ConsumoAPI;
 import edu.com.igor.API_TabelaFIPE.service.ConverteDados;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -79,7 +81,24 @@ public class Principal {
             //Recebendo codigo do modelo
         System.out.println("Digite por favor o código do modelo para buscas os valores de avaliação: ");
         var codigoModelo = scanner.nextLine();
+
+
+            //buscando os modelos informados
         endereco += "/" + codigoModelo + "/anos";
         json = consumoAPI.obterDados(endereco);
+        List<Dados> anos = converteDados.obterLista(json, Dados.class);
+        List<Veiculo> veiculos = new ArrayList<>();
+
+            // percorrendo uma lista incrementando o codigo refente ao ano para exibir as informações completas de todos os veiculos
+        for (int i = 0; i < anos.size(); i++) {
+            var enderecoAnos = endereco + "/" + anos.get(i).codigo();
+            json = consumoAPI.obterDados(enderecoAnos);
+            Veiculo veiculo = converteDados.obterDados(json, Veiculo.class);
+            veiculos.add(veiculo);
+        }
+
+            // exibindo os veiculos detalhados
+        System.out.println("\nTodos os veículo(s) filtrados por ano");
+        veiculos.forEach(System.out::println);
     }
 }
