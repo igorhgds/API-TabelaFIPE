@@ -1,8 +1,11 @@
 package edu.com.igor.API_TabelaFIPE.principal;
 
+import edu.com.igor.API_TabelaFIPE.model.Dados;
+import edu.com.igor.API_TabelaFIPE.model.Modelos;
 import edu.com.igor.API_TabelaFIPE.service.ConsumoAPI;
 import edu.com.igor.API_TabelaFIPE.service.ConverteDados;
 
+import java.util.Comparator;
 import java.util.Scanner;
 
 public class Principal {
@@ -25,8 +28,8 @@ public class Principal {
         System.out.println(menu);
         var opcao = scanner.nextLine();
 
+            //Escolha da opcao de consulta
         String endereco;
-
         if (opcao.toLowerCase().contains("carr")){
             endereco = URL_BASE + "/carros/marcas";
         } else if (opcao.toLowerCase().contains("mot")){
@@ -34,8 +37,26 @@ public class Principal {
         } else {
             endereco = URL_BASE + "/caminhoes/marcas";
         }
-
+            //Retornando o Json do endereco de acordo com a escolha
         var json = consumoAPI.obterDados(endereco);
         System.out.println(json);
+
+            //Exibindo a Lista de marcas da opcao escolhinda
+        var marcas = converteDados.obterLista(json, Dados.class);
+        marcas.stream()
+                .sorted(Comparator.comparing(Dados::codigo))
+                .forEach(System.out::println);
+
+        System.out.println("Informe o código da marca para consulta");
+        var codigoMarca = scanner.nextLine();
+
+            //Exibindo a lista dos modelos de acordo com a marca
+        endereco += "/" + codigoMarca + "/modelos";
+        json = consumoAPI.obterDados(endereco);
+        var modeloLista = converteDados.obterDados(json, Modelos.class);
+        System.out.println("\nModelos da Marca: ");
+        modeloLista.modelos().stream()
+                .sorted(Comparator.comparing(Dados::codigo))
+                .forEach(System.out::println);
     }
 }
